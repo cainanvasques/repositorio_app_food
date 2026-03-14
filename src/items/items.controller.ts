@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { ItemsService } from './items.service';
 import { CreateItemDto } from './dto/create-item.dto';
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 
 @Controller('items')
 export class ItemsController {
@@ -13,6 +14,12 @@ export class ItemsController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Busca todos os itens' })
+  @ApiResponse({
+    status: 200,
+    description: 'Retorna a lista completa de alimentos.',
+    type: [CreateItemDto]
+  })
   findAll() {
     return this.itemsService.findAll();
   }
