@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -36,8 +36,34 @@ export class ItemsService {
       throw new NotFoundException(`Item com ID ${id} não localizado`);
     }
 
+    const hasChanges = Object.keys(updateItemDto).some(
+      (key) => updateItemDto[key] !== item[key]
+    );
+
+    if (!hasChanges) {
+      throw new BadRequestException('Nenhuma alteração foi detectada para este item.');
+    }
+
     Object.assign(item, updateItemDto);
 
-    return await this.repository.save(item);
+    await this.repository.save(item);
+
+    return {
+      message: `O item ${item.name} foi editado com sucesso`,
+    }
+  }
+
+  async remove(id: number) {
+    const item = await this.repository.findOneBy({ id });
+
+    if (!item) {
+      throw new NotFoundException(`Item com ID ${id} não localizado`);
+    }
+
+    await this.repository.remove(item);
+
+    return {
+      message: `O item ${item.name} foi deletado com sucesso`,
+    }
   }
 }

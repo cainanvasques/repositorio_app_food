@@ -31,9 +31,16 @@ export class ItemsController {
   @ApiOperation({ summary: 'Atualiza um item', description: 'Permite alterar o nome, quantidade ou status de comprado de um item já cadastrado.' })
   @ApiParam({ name: 'id', description: 'O ID numérico do item que você quer editar', example: '1' })
   update(
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() UpdateItemDto: UpdateItemDto
   ){
-    return this.itemsService.update(+id, UpdateItemDto)
+    return this.itemsService.update(id, UpdateItemDto)
   }
+
+  @Delete(':id')
+  @ApiOperation({ summary: 'Remove um item', description: 'Permite remover um item já cadastrado.' })
+  remove(@Param('id') id: number){
+    return this.itemsService.remove(id)
+  }
+
 }
