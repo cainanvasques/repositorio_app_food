@@ -14,7 +14,7 @@ export class ItemsService {
   ) { }
 
 
-  findAll() {
+  async findAll() {
     return this.repository.find();
   }
 
@@ -65,5 +65,11 @@ export class ItemsService {
     return {
       message: `O item ${item.name} foi deletado com sucesso`,
     }
+  }
+
+  async findItemName(itemName: string) {
+    const item = await this.repository.findOneBy({ name: itemName })
+
+    return item
   }
 }
