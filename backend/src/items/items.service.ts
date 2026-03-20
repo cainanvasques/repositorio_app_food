@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { ILike, Repository } from 'typeorm';
 import { Item } from './entities/item.entity';
 import { UpdateItemDto } from './dto/update-item.dto';
 
@@ -13,19 +13,25 @@ export class ItemsService {
     private readonly repository: Repository<Item>,
   ) { }
 
-
   async findAll() {
     return this.repository.find();
   }
 
-  async create(name: string, quantity: number) {
+  async create(createItemDto: CreateItemDto) {
     const newItem = this.repository.create({
-      name,
-      quantity,
+      ...createItemDto,
+      name: createItemDto.name.trim(),
       isPurchased: false,
     });
 
-    return await this.repository.save(newItem);
+    const register = await this.repository.save(newItem);
+
+    return {
+      success: true,
+      message: "Item adicionado à lista!",
+      data: register
+    };
+
   }
 
   async update(id: number, updateItemDto: UpdateItemDto) {
@@ -45,11 +51,12 @@ export class ItemsService {
     }
 
     Object.assign(item, updateItemDto);
-
-    await this.repository.save(item);
+    const updatedItem = await this.repository.save(item);
 
     return {
+      success: true,
       message: `O item ${item.name} foi editado com sucesso`,
+      data: updatedItem
     }
   }
 
@@ -67,9 +74,11 @@ export class ItemsService {
     }
   }
 
-  async findItemName(itemName: string) {
-    const item = await this.repository.findOneBy({ name: itemName })
+  async findItemName(name: string) {
+    const search = await this.repository.findOne({
+      where: { name: ILike(name.trim()) }
+    });
 
-    return item
+    return search?.name
   }
 }

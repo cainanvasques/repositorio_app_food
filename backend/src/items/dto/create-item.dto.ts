@@ -1,12 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
+import { Transform } from "class-transformer";
 import { isBoolean, IsNotEmpty, IsNumber, isNumber, IsPositive, isPositive, IsString, MinLength } from "class-validator";
 
 export class CreateItemDto {
 
-    @ApiProperty({ 
+    @ApiProperty({
         description: 'O nome do alimento ou item da dieta',
         example: 'Frango Grelhado',
-        minLength: 3 
+        minLength: 3
     })
     @IsString({ message: 'O nome deve ser um texto' })
     @IsNotEmpty({ message: 'O nome não pode estar vazio' })
@@ -14,9 +15,9 @@ export class CreateItemDto {
     name: string;
 
 
-    @ApiProperty({ 
+    @ApiProperty({
         description: 'A quantidade numérica do item',
-        example: 150 
+        example: 150
     })
     @IsNotEmpty({ message: 'A quantidade não pode estar vazia' })
     @IsNumber({}, { message: 'A quantidade deve ser um número válido' })
